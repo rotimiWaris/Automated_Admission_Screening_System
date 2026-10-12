@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "reusable-result-ocr"
+version = "0.1.0"
+description = "Framework-independent Tesseract image OCR with structured word results"
+requires-python = ">=3.10"
+dependencies = ["pytesseract>=0.3.13,<0.4", "Pillow>=11,<13", "pypdfium2>=4.30,<6", "openpyxl>=3.1.5,<4", "defusedxml>=0.7.1,<1"]
+
+[project.scripts]
+result-ocr = "result_ocr.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

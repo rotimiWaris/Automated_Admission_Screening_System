@@ -1,0 +1,31 @@
+.venv/
+__pycache__/
+*.pyc
+*.egg-info/
+node_modules/
+dist/
+db.sqlite3
+.env
+artifacts/
+ocr-data/*.traineddata
+
+# Local examples and generated review/report output (not runtime dependencies)
+/samples/
+/artifacts/
+*.zip
+# Secrets, local databases and SQLite sidecars
+.env.*
+!.env.example
+*.sqlite3
+*.sqlite3-journal
+*.sqlite3-wal
+*.sqlite3-shm
+# Test and tool caches
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+coverage/
+*.log
+.DS_Store
+Thumbs.db

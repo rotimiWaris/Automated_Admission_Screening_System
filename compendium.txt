@@ -1,0 +1,218 @@
+there are three columns; 
+-s/n
+-programmes
+-general requirement
+
+i. school of business & management studies
+
+row 1
+-1
+-Accountancy
+JAMB sUBJECT combination: English Language, mathematics and any two of geography, commerce, government, principles of accounts and economics
+-a. credit passes in five (5) o'level subjects obtained at not more than 2 sittings including english language, mathematics and at least one of economics/commerce
+b. two (2) other credit passes in any of principles of accounts/book keeping, statistics, government, geography, history, business methods/studies/management, literature in english, physics, chemistry, biology/agricultural science, civic education, insurance, language(yoruba/hausa/igbo/french) and religious studies(crk/irk).
+
+row 2
+-2
+-business administration and management
+JAMB sUBJECT combination: English Language, mathematics and any two of geography, commerce, government, principles of accounts and economics
+-a. credit passes in five (5) o'level subjects obtained at not more than 2 sittings including english language, mathematics and at least one of economics/commerce
+b. two (2) other credit passes in any of principles of accounts/book keeping, literature in english, business methods/studies/management, history, statistics, store, management, geography, marketing, government, physics, chemistry, civic education, biology/agricultural science, language(yoruba/hausa/igbo/french) and religious studies(crk/irk).
+
+row 3
+-3
+-marketing
+JAMB sUBJECT combination: English Language, mathematics and any two of geography, commerce, government, principles of accounts and economics
+-a. credit passes in five (5) o'level subjects obtained at not more than 2 sittings including english language, mathematics and at least one of economics/commerce
+b. two (2) other credit passes in any of principles of accounts/book keeping, literature in english, business methods/studies/management, statistics, government/history, purchasing, physics, chemistry, biology/agricultural science, language(yoruba/hausa/igbo/french), religious studies(crk/irk), marketing, civic education and store management.
+
+row 4
+-4
+-banking & finance
+JAMB sUBJECT combination: English Language, mathematics and any two of economics, geography, history, government, commerce or principles of accounts
+-a. credit passes in five (5) o'level subjects obtained at not more than 2 sittings including english language, mathematics and at least one of economics/commerce
+b. two (2) other credit passes in any of principles of accounts/book keeping, statistics, government, geography, history, business methods/studies/management, literature in english, physics, chemistry, biology/agricultural science, civic education, insurance, language(yoruba/hausa/igbo/french) and religious studies(crk/irk).
+
+[end of page]
+Note: In the school of sbms economics, commerce and principles of accounts/book keeping could be counted as separate credits if the candidate has credits in these subjects.
+
+ii. school of communication and information technology
+row 5
+-1
+-mass communication
+JAMB subject combination: English language and any other 3 social science, arts or physical science subjects
+-a. credit passes in five (5) o'level subjects obtained at not more than 2 sittings including english language, mathematics
+b. any other three (3) credit passes from any of history, literature in english, economics/commerce, fine arts, french, government, biology, physics, chemistry, geography, typewriting, principles of accounts, religious studies(crk/irk), civic education and either one nigerian language(yoruba/igbo/hausa)
+c. a minimum of pass in literature in english is required in addition to the normal entry requirements
+
+row 6
+-2
+-office technology and management
+JAMB subject combination: English language and any other 3 from mathematics, economics/commerce, government/history, crs, geography and accounts
+-a. credit passes in five (5) o'level subjects obtained at not more than 2 sittings including english language, mathematics
+b. three (3) other credit passes from typewriting, shorthand, office practice, economics/commerce, literature in english, principles of accounts, business methods, history/government, geography, biology/agricultural science, physics, chemistry and data processing, marketing, civic education, religious studies(crk/irk) and french.
+
+row 7
+-3
+-Social Development
+JAMB subject combination: English Language, Government or History and any other two (2) from Economics, Commerce, Geography and Mathematics
+-a. Credit passes in Five (5) O'level subjects obtained at not
+more than two (2) sittings including English Language and Mathematics.
+b. Three (3) other credit passes from Economics/Commerce, Business Methods,Principles of Accounts,Literature in English,Geography,Office Practice,Biology/Agricultural Science,Chemistry,Physics,History/Government, Typewriting, Shorthand.
+
+row 8
+-4
+-Library and Information Science
+JAMB subject combination: English, and any other 3 Social Science,Arts or Physical science subjects.
+-a. Credit passes in Five (5) O'level subjects obtained at not more than two (2) sittings including English Language, Mathematics.
+b. Three (3) other subjects in any of the followings: History,Civic Education,Music,French,Economics/Commerce,Government,CRS/IRK,Geography, Literature,Physics,Chemistry,Agricultural Science and Biology.
+
+iii. SCHOOL OF SCIENCE AND TECHNOLOGY
+row 9
+-1
+-Science Laboratory Technology
+JAMB subject combination: English Language, Mathematics,Biology/Agricultural Science and Physics.
+-a. Credit passes in Five (5) O'level subjects obtained at not more than two (2) sittings including English Language,Mathematics, credits in two of the core three science subjects and at least a pass in the third science subject namely: Physics, Chemistry, Biology/Agricultural Science.
+b. Other credit pass from Economics,Geography,Technical Drawing,Metal or Wood Work,Fine Arts,Basic Electricity/Electronics, Further Mathematics,Statistics and Nigerian Language (Yoruba/Igbo/Hausa).
+
+row 10
+-2
+-Food Technology
+JAMB subject combination: English Language,Agricultural Science/Biology (compulsory) and any two (2) of Economics,Chemistry,Physics,Mathematics
+-a. Credit passes in five (5) O'level subjects obtained at not more than two (2) sittings including English Language,Mathematics, Credits in the following two core science subjects namely: Chemistry, Biology/Agricultural Science.
+b. Other credit pass from the following subjects; Economics, Geography, Further Mathematics,Physics and Technical Drawing, Home Economics,Food and Nutrition,Animal Husbandry, Basic catering and food services and Fisheries and Catering Craft Practice.
+c. A pass in Physics is required (along with other five credits).
+
+row 11
+-3
+-Hospitality Management
+JAMB subject combination: English Language,Biology/Agricultural Science (compulsory) and any two (2) of Physics,Chemistry,Mathematics and Economics
+-a. Credit passes in Five (5) O'level subjects obtained at not more than two (2) sittings including English Language,Mathematics and one of Biology/Agricultural Science/Food and Nutrition.
+b. Two (2) other credit passes from Physics, Chemistry, Mathematics/Statistics, commerce/economics, Health Science,Food and Nutrition/Home Economics/Catering Craft, Geography, Government, Technical Drawing and one Nigerian Language (Yoruba/Igbo/Hausa).
+
+row 12
+-4
+-Leisure and Tourism Management
+JAMB subject combination: English Language,Mathematics, Chemistry and Physics
+-a. Credit passes in Five (5) O'level subjects obtained at not more than two (2) sittings including English Language and Mathematics.
+b. Three (3) other subjects in any of the followings: Geography,Economics/Commerce,History,Marketing, Civic Education, Government, accounting, Tourism studies,Agricultural Science, Biology,Chemistry,Physics and Food & Nutrition.
+
+row 13
+-5
+Nutrition and Dietetics
+JAMB subject combination: Use of English Language,Chemistry,Biology and Agricultural Science
+-a. Credit passes in five (5) O'level subjects obtained at not more than two (2) sittings including English Language and Mathematics.
+b. Three (3) other credit passes from Physics,Chemistry,Biology/Agricultural Science/Health Science, Home Economics/Management, Food and Nutrition, Economics/Commerce,Catering Craft Practice,Basic Catering and Food services.
+
+row 14
+-6
+-Pharmaceutical Technology
+JAMB subject combination: English Language,Mathematics,Chemistry and Physics/Biology
+-a. Credit passes in five (5) O'level subjects obtained at not more than two (2) sittings including English Language,Mathematics,Chemistry, Biology and a pass in Physics
+b. One (1) other credit pass from any of Geography,Economics and Technical Drawing, Food & Nutrition,Agricultural Science.
+
+row 15
+-7
+-Computer Science
+JAMB subject combination: English Language,Mathematics (compulsory) and any two (2) of Geography,Physics,Economics or Chemistry
+-a. Credit passes in five (5) O'level subjects obtained at not more than two(2) sittings including Mathematics, Physics/Basic Electricity/Electronics and English Language.
+b. Two (2) other credit passes from Chemistry,Biology/Agricultural Science/Food and Nutrition,Computer Studies/Data Processing/ICT, Computer Craft practice, Civic Education/Geography, Economics/Commerce, Further Mathematics, Electrical Installation and Maintenance Work.
+
+row 16
+-8
+-Statistics and Mathematics
+JAMB subject combination: English Language and any three (3) of Economics/Commerce, History/Government, CRS/IRK, Mathematics
+-a. Credit passes in five (5) O'level subjects obtained at not more than two sittings including Mathematics,English Language.
+b. Three (3) other subjects chosen from the following: Economics,Geography,Government/History,Book-Keeping/Accounting,Further Mathematics, Physics,Chemistry, Biology/Agricultural Science, Commerce,Statistics and Religious Studies (CRS/IRK).
+
+row 17
+-9
+-Environmental Science and Management Technology
+JAMB subject combination: English,Chemistry, Biology and any one of Physics, Agricultural Science and Geography
+-Credit passes in Five (5) O'level subjects obtained at not more than two (2) sittings which include English Language, Mathematics and any three (3) science subjects from Physics,Chemistry,Biology,Agricultural Science and Geography.
+
+
+iv. SCHOOL OF ENVIRONMENTAL STUDIES
+
+row 18
+-1
+-Art and Industrial Design
+JAMB subject combination: English Language, Fine-Art and 2 other of Mathematics,History,Chemistry,Biology and a Nigerian Language (Yoruba/Igbo/Hausa)
+-a. Credit passes in five (5) O'level subjects at not more than two sittings including Mathematics and English Language
+b. Three (3) other credit passes from Biology/Agricultural Science,Fine-Art/Visual Art/Cultural and Creative Art,Tie/Dye and Bleaching,Chemistry,History,Government, Literature in English, Clothing and Textiles,Geography,Economics, Commerce,Religious Studies (CRK/IRK), Technical Drawing and Home Economics
+
+row 19
+-2
+-Architectural Technology
+JAMB subject combination: English Language,Mathematics (compulsory) and any 2 of Physics, Chemistry and Technical Drawing
+-a. Credit passes in five (5) O'level subjects at not more than two sittings including Mathematics, Physics and English Language.
+b. Two (2) other credit passes from Biology/Agricultural Science,Chemistry, History, Further Mathematics,Geography,Economics/Commerce, Technical Drawing/Graphic Design, Building Construction, Painting and Decoration/Fine-Art,Wood Work, Basic Electronics,Computer Studies, Religious Studies (CRK/IRK),Carpentry and Joinery.
+c. A pass in Technical Drawing/Fine Art will be an advantage
+
+row 20
+-3
+-Building Technology
+JAMB subject combination: English Language, Mathematics, Physics and Chemistry or Fine Arts
+-a. Credit passes in five (5) O'level subjects at not more than two sittings including Mathematics,Physics and English Language
+b. Two(2) other credit passes from Biology,Chemistry,Further Mathematics,Geography,Technical Drawing.Wood Work, Metal Work, Fine Art, Religious Studies (CRK/IRK),Commerce/Economics, Statistics, Basic Electricity,Building Construction,Plumbing and Pipe fitting,Bricklaying and Concreting,Computer Studies, Painting and Decoration, Carpentry and Joinery.
+
+
+row 21
+-4
+-Estate Management and Valuation
+JAMB subject combination: English Language,Mathematics (compulsory),and any other two (2) of Economics,Art,Physics,Chemistry and Biology
+-a. Credit passes in five (5) O' level subjects obtained at not more than two sittings including English Language, Mathematics, Economics and one credit from Physics/Chemistry/Biology /Agricultural Science.
+b. One (1)other credit pass from Geography,Government,Technical Drawing,Commerce, Fine Art, Principle of Accounts,Book-Keeping,Nigerian Language (Yoruba/Igbo/Hausa), Food and Nutrition, Literature in English,Wood Work and Metal Work.
+c. However, any two (2) credit passes in Science subjects (Physics,Chemistry, Biology/ Agricultural Science) with English Language,Mathematics and Economics could be considered for Science based students
+
+row 22
+-5
+-Quantity Surveying
+JAMB subject combination: English Language,and any three (3) of Physics,Mathematics,Geography,Economics, Biology/Agricultural Science.
+-a. Credit passes in five (5) O'level subjects at not more than two sittings including English Language, Mathematics,Physics/Chemistry.
+b. Two (2) other credit passes from Biology/Agricultural Science,Chemistry,Physics,Further Mathematics, Geography,Economics,Fine Arts,Technical Drawing,Metal Work,Wood Work,Religious Studies (CRK/IRK),Carpentry and Joinery,Bricklaying and Concreting,and Building Construction.
+
+row 23
+-6
+-Surveying and Geo-Informatics
+JAMB subject combination: English Language,and any three (3)of Chemistry,Agricultural Science/Biology,Economics,Mathematics
+-a. Credit passes in five (5) O'level subjects at not more than two sittings including Mathematics,Physics and English Language.
+b. Two (2) other credit passes from Biology/Agricultural Science,Chemistry,Statistics, Further Mathematics,Geography,Economics/Commerce, Technical Drawing/Fine-Art,Surveying and Religious Studies (CRK/IRK).
+
+row 24
+-7
+-Urban and Regional Planning
+JAMB subject combination: English Language, Geography (compulsory) and any two (2) of Physics, Chemistry, Biology/Agricultural Science, Economics, Government, Fine Arts or Technical Drawing. Mathematics remains compulsory at O'level.
+-a. Credit passes in five (5) O*level subjects at not more than two sittings including Mathematics,English Language and one from Physics,Chemistry,Biology and Economics.
+b. Two (2) other credit passes from Agricultural Science,Further Mathematics,Geography,Fine Arts Technical Drawing,Government/History,Religious Studies (CRK/IRK) and one Nigerian Language (Yoruba/Igbo/Hausa).
+c. Credit passes in Physics,Chemistry,Biology and Economics should be counted as separate credit if the candidate has credit in these subjects
+
+
+v. SCHOOL OF ENGINEERING
+row 25
+-1
+-Electrical/Electronics Engineering
+JAMB subject combination: English Language,Mathematics,Physics and Chemistry
+-a. Credit passes in five (S)O'level subjects at not more than two sittings including English Language,Mathematics,Physics,Chemistry
+b. One (1) other credit pass from Metal Work, Technical Drawing,Further Mathematics,Basic Electricity/Electronics,Biology/Agricultural Science,Geography,Electrical Installation and Maintenance Work,Economics,Computer Studies,Civic Education,Radio,Television and Electrical Work,Air Conditioning and Refrigeration,Auto Mechanical Work,Auto Electrical Work,GSM Phone Maintenance and Repair and Data Processing
+
+row 26
+-2
+-Computer Engineering
+JAMB subject combination: English Language, Mathematics,Physics and Chemistry
+-a. Credit passes in five (S)O'level subjects at not more than two sittings including English Language,Mathematics,Physics and Chemistry.
+b. One(1) other credit pass from Metal Work,Technical Drawing,Auto Mechanics,Further Mathematics, Basic Electricity/Electronics, Biology/Agricultural Science,Geography,Economics/Commerce,Computer Studies,Civic Education,GSM Phone Maintenance and Repair,Radio, Television and Electrical Work, Electrical Installation and Maintenance Work,and Data Processing.
+
+row 27
+-3
+-Mechanical Engineering
+JAMB subject combination: English Language,Mathematics,Physics and Chemistry
+-a. Credit passes in five (5) O'level subjects obtained at not more than two sittings including English Language,Mathematics,Physics and Chemistry
+b. One (1) other credit pass from Metal work, Technical Drawing, Auto Mechanics,Further Mathematics,Basic Electricity/Electronics,Biology/Agricultural Science,Geography,Economics, Computer Studies,Civic Education, Auto Body Repair and Spray Painting, Air Conditioning and Refrigeration, Welding and Pipe fitting, Plumbing and Pipe Fitting, Auto Mechanic Work and Auto Electrical Work.
+
+row 28
+-4
+-Civil Engineering
+JAMB subject combination: English Language,Mathematics, Physics and Chemistry
+-a. Credit passes in five (5) O'level subjects obtained at not more than two sittings including English Language,Mathematics,Chemistry and Physics
+b. One (1) other credit pass from Metal Work,Technical Drawing,Auto-Mechanics,Further Mathematics,Basic Electricity/Electronics,Biology/Agricultural Science,Geography,Economics/Commerce,Computer Studies,Civic Education,Block Laying and Concreting,Upholstery,Furniture Making,Carpentry and Joinery,Machine Wood Working, Plumbing and Pipe fitting and Building Construction
