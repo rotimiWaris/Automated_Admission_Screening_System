@@ -8,7 +8,7 @@ from django.views.decorators.http import require_POST
 from .routes import evaluate_route
 from .models import RuleSet, Verification
 from .views import api, body
-from .identities import registration_key
+from .identities import registration_key, screening_key
 from .applicant_data import ADMISSION_TYPES
 from .screening_export import enrich_result, workbook_bytes
 
@@ -46,14 +46,18 @@ def screen_batch(request):
         records.extend((page['page'], draft) for draft in page['drafts'])
     if not 1 <= len(records) <= 10000:
         raise ValueError('Extract between 1 and 10000 students per batch.')
-    registrations = Counter(registration_key(draft['registration_number']) for _, draft in records)
+    registrations = Counter(screening_key(draft, admission_type) for _, draft in records)
     existing = dict(Verification.objects.filter(owner=request.user, registration_key__in=[key for key in registrations if key]).values_list('registration_key', 'id')) if request.user.is_authenticated else {}
+    if admission_type != 'ND Full-Time' and request.user.is_authenticated:
+        for saved in Verification.objects.filter(owner=request.user, result__admission_type=admission_type).values('id','result'):
+            key = screening_key(saved['result'])
+            if key: existing.setdefault(key,saved['id'])
     rules = {r.id: r for r in RuleSet.objects.filter(active=True, admission_type__in=[admission_type, 'All Admission Type', 'ND Full-Time'])}
     results = []
     with transaction.atomic():
         for page_number, draft in records:
             issues = list(draft.get('review_issues', []))
-            registration = registration_key(draft['registration_number'])
+            registration = screening_key(draft, admission_type)
             duplicate = bool(registration and (registration in existing or registrations[registration] > 1 or draft.get('duplicate_in_upload')))
             if admission_type != 'ND Full-Time' and draft.get('admission_type') != admission_type:
                 issues.append('Import the register using the selected admission type before screening.')
@@ -72,7 +76,16 @@ def screen_batch(request):
             if rule and mapping.get('revision') != rule.revision:
                 return JsonResponse({'error': 'Programme rules changed. Reload programmes before screening this batch.'}, status=409)
             outcome = None
-            if not rule:
+            if admission_type != 'ND Full-Time':
+                from .entry_assessment import assess_entries
+                try:
+                    assessment = assess_entries(draft, list(rules.values()), admission_type, not issues)
+                    assessment['warnings'].extend(draft.get('optional_warnings', []) + draft.get('processing_warnings', []))
+                    assessment['smart_processing'] = draft.get('smart_processing', False)
+                    outcome = enrich_result(assessment, draft, admission_type)
+                except ValueError as exc:
+                    issues.append(str(exc))
+            elif not rule:
                 issues.append('No active admission rule is matched to this course. Select one and screen again.')
             else:
                 try:
@@ -100,10 +113,10 @@ def screen_batch(request):
                 if item['result'] and not item.get('save_skipped'):
                     origin_key = 'ocr' if item['source_format'] == 'ocr' else 'import_source'
                     result = item['result'] | {origin_key: {'page': item['page'], 'confidence': item['confidence'], 'issues': item['issues'], 'format': item['source_format'], 'rows': item['source_rows']}}
-                    key = registration_key(item['registration_number'])
+                    key = screening_key(item, admission_type)
                     if not key:
                         item['status'] = 'Pending Review'
-                        item['issues'].append('A valid registration number is required before saving.')
+                        item['issues'].append('A valid '+('JAMB registration number' if admission_type=='ND Full-Time' else 'form number')+' is required before saving.')
                         continue
                     saved, created = Verification.objects.get_or_create(owner=request.user, registration_key=key, defaults={'result': result})
                     if created:

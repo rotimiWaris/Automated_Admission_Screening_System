@@ -312,3 +312,12 @@ Programme matching ignores qualification/mode labels (ND, HND, Full Time, Part T
 
 
 ND Part-Time and HND imports use the school result sheet directly, even if an unrelated JAMB sheet is present. ND Part-Time exports its 15 columns and applies Olevel and ND age checks, without UTME checks. HND Full-Time/Part-Time export their 19 columns and apply Olevel plus ND grade/CGPA checks, without age or UTME checks. Other portal columns are ignored. Missing route-specific required columns still produce an error. School Full Name can be split using the uppercase-surname convention; ambiguous splits require review.
+
+
+### HND credentials and part-time identification
+
+ND Part-Time and both HND routes use the application form number for history identity; JAMB number may be blank or omitted. ND Full-Time retains its JAMB identification requirements.
+
+HND ND Course Of Study, ND Grade, ND CGPA, institution and graduation year may contain newline-separated entries. Entries are assessed together by line; a single value is shared across entries. Unequal multi-line lengths require review. A qualifying complete entry is selected and its course, grade and CGPA are ticked in the Excel output. Other submitted entries are preserved. Grade/CGPA contradictions fail the affected entry. Existing Pass-level consideration remains pending; IT and accreditation remain excluded.
+
+Conservative, unique course typo matches and repeated course names are recognised for ND Part-Time and HND. Unrelated courses are Unqualified; ambiguous matches require review. Every exported Remark cell includes a comment explaining failures, review reasons and any selection or spelling correction. Corrected files can be reprocessed without storing the same form again.

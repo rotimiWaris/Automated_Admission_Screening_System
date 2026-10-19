@@ -10,6 +10,7 @@ def normal(value):
 def prepare_register_row(row, headers, route, number):
     expected={normal(h):h for h in headers}
     optional={normal(h) for h in ['#','Remark','Age','Sitting(s)','OLevel Result Sitting 2']}
+    if route != 'ND Full-Time': optional.update(['jambreg','jambnumber'])
     # Accept portal label variants but keep the selected route's canonical schema.
     groups = [('formno','formnumber'), ('jambreg','jambnumber','regno','registrationnumber'),
               ('phone','phoneno'), ('dob','dateofbirth'), ('firstchoice','choice1')]

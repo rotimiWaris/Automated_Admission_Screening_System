@@ -26,7 +26,13 @@ def import_route(rows, filename, route, smart_processing=False):
         for header,value in source.items():
             target=aliases.get(normal(header),canonical.get(normal(header)))
             if target: values[target]=value
+        form = source.get('Form Number',source.get('Form number','')).strip()
+        values['Jamb reg'] = form
         draft=import_register([TableRow(row.sheet,row.number,values)],filename,require_utme=False,smart_processing=smart_processing)[0]
+        draft['identifier_kind'] = 'Form number'
+        if not form:
+            draft['review_issues'] = [i for i in draft['review_issues'] if i != 'Student name, JAMB registration or programme is missing.']
+            draft['review_issues'].append('Form number is required.')
         raw = {normal(k):v for k,v in row.values.items()}
         if raw.get('fullname') and not raw.get('surname') and not raw.get('firstname'):
             from .portal_import import split_name
@@ -63,8 +69,8 @@ def evaluate_route(rule, draft, route, confirmed):
             expected='fail' if cgpa<2 else 'pass' if cgpa<Decimal('2.50') else 'lower credit' if cgpa<3 else 'upper credit' if cgpa<Decimal('3.50') else 'distinction'
             grade=' '.join(str(source.get('ND Grade','')).lower().replace('-',' ').split())
             grade={'lc':'lower credit','uc':'upper credit'}.get(grade,grade)
-            check('ND grade consistency','passed' if grade==expected else 'pending',f'ND grade {grade or "not supplied"}; CGPA implies {expected}.')
+            check('ND grade consistency','passed' if grade==expected else ('pending' if not grade else 'failed'),f'ND grade {grade or "not supplied"}; CGPA implies {expected}.')
         result['warnings'].append('HND academic screening only: IT/work experience and accreditation are excluded by configuration. Programme is taken from ND Course Of Study.')
-        result['status']='Pending Review' if any(c['status']=='pending' for c in checks) else 'Not Eligible' if any(c['status']=='failed' for c in checks) else 'Eligible'
+        result['status']='Not Eligible' if any(c['label']=='ND grade consistency' and c['status']=='failed' for c in checks) else 'Pending Review' if any(c['status']=='pending' for c in checks) else 'Not Eligible' if any(c['status']=='failed' for c in checks) else 'Eligible'
     from .age_policy import apply_age_policy
     return apply_age_policy(result, draft, admission_type=route)

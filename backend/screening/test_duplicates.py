@@ -14,7 +14,7 @@ class DuplicateTests(TestCase):
         self.user = get_user_model().objects.create_user(username='duplicate-user')
         self.client.force_login(self.user)
         self.rule = RuleSet.objects.create(programme='Computing', required_subjects=[{'subject':'English Language','minimum_grade':'C6'}])
-        self.draft = {'student_name':'Test Student', 'registration_number':'AB-123', 'course':'Computing', 'jamb_score':240,
+        self.draft = {'dob': '2000-01-01', 'student_name':'Test Student', 'registration_number':'AB-123', 'course':'Computing', 'jamb_score':240,
                       'sittings':[{'board':'WAEC','exam_type':'School','year':2025,'subjects':[{'subject':s,'grade':'B3'} for s in ['English Language','Mathematics','Physics','Chemistry','Biology']]}], 'review_issues':[], 'confidence':95}
 
     def test_manual_repeat_is_rejected_and_database_enforces_identity(self):

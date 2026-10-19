@@ -69,7 +69,7 @@ class RouteTests(TestCase):
         self.assertTrue(candidate_name_issues('Test Example','Candidate Name:EXAMPLE TEST STUDENT'))
 
     def test_hnd_grade_boundaries_conflicts_and_missing_values(self):
-        for cgpa,grade,status in [('1.99','Fail','Not Eligible'),('2.00','Pass','Pending Review'),('2.49','Pass','Pending Review'),('2.50','Lower Credit','Eligible'),('2.99','Lower Credit','Eligible'),('3.00','Upper Credit','Eligible'),('3.50','Distinction','Eligible'),('4.00','Distinction','Eligible'),('4.01','Distinction','Pending Review'),('2.50','Upper Credit','Pending Review'),('','Lower Credit','Pending Review')]:
+        for cgpa,grade,status in [('1.99','Fail','Not Eligible'),('2.00','Pass','Pending Review'),('2.49','Pass','Pending Review'),('2.50','Lower Credit','Eligible'),('2.99','Lower Credit','Eligible'),('3.00','Upper Credit','Eligible'),('3.50','Distinction','Eligible'),('4.00','Distinction','Eligible'),('4.01','Distinction','Pending Review'),('2.50','Upper Credit','Not Eligible'),('','Lower Credit','Pending Review')]:
             with self.subTest(cgpa=cgpa,grade=grade):
                 item,sheet=self.run_route('HND Full-Time',{'ND CGPA':cgpa,'ND Grade':grade})
                 self.assertEqual(item['status'],status)
@@ -120,7 +120,7 @@ class RouteTests(TestCase):
                 raw=workbook([school('SCHOOLONLY')],[jamb('DIFFERENT')|{'Has 5 Credits?':False}])
                 drafts,_=import_students(raw,'portal.xlsx',route)
                 self.assertEqual(len(drafts),1)
-                self.assertEqual(drafts[0]['registration_number'],'SCHOOLONLY')
+                self.assertEqual(drafts[0]['registration_number'],'FORMSCHOOLONLY')
                 self.assertEqual(set(drafts[0]['source_record']),set(headers_for(route)))
                 self.assertNotIn('jamb score',drafts[0]['source_record'])
                 self.assertFalse(any('Has 5 Credits' in issue for issue in drafts[0]['review_issues']))
@@ -132,3 +132,48 @@ class RouteTests(TestCase):
                 if route.startswith('HND'):
                     self.assertTrue(any(c['label']=='ND CGPA' for c in result['checks']))
                     self.assertNotIn('Admission age',[c['label'] for c in result['checks']])
+
+    def test_hnd_aligned_entries_select_qualifying_credentials_and_comments(self):
+        for route in ['HND Full-Time', 'HND Part-Time']:
+            item, sheet = self.run_route(route, {'ND Course Of Study': 'Unknown profession\nAccountnacy', 'ND Grade': 'Distinction\nLower Credit', 'ND CGPA': '3.80\n2.70', 'JAMB Number': ''})
+            self.assertEqual(item['status'], 'Eligible')
+            self.assertEqual(item['result']['selected_nd_entry']['index'], 1)
+            for field in ['ND Course Of Study','ND Grade','ND CGPA']:
+                value = sheet.cell(2, headers_for(route).index(field)+1).value
+                self.assertNotIn(chr(0x2713), value.splitlines()[0])
+                self.assertIn(chr(0x2713), value.splitlines()[1])
+            self.assertIn('selected entry 2', sheet.cell(2,19).comment.text)
+
+    def test_course_typos_repetition_and_unrelated_courses(self):
+        for route in ['ND Part-Time','HND Full-Time','HND Part-Time']:
+            field = 'ND Course Of Study' if route.startswith('HND') else 'Department'
+            for course, status in [('Accountnacy','Eligible'),('Accountancy Accountancy','Eligible'),('Marine Navigation','Not Eligible')]:
+                item, sheet = self.run_route(route, {field: course})
+                self.assertEqual(item['status'], status)
+                self.assertIsNotNone(sheet.cell(2,sheet.max_column).comment)
+
+    def test_no_jamb_column_needed_but_form_is_required(self):
+        for route in ['ND Part-Time','HND Full-Time','HND Part-Time']:
+            jamb = 'JAMB Number' if route.startswith('HND') else 'jamb reg'
+            form = 'Form Number' if route.startswith('HND') else 'Form number'
+            item, _ = self.run_route(route, omit=[jamb])
+            self.assertEqual(item['status'],'Eligible')
+            item, sheet = self.run_route(route, {form: ''})
+            self.assertEqual(item['status'],'Pending Review')
+            self.assertIn('Form number is required',sheet.cell(2,sheet.max_column).comment.text)
+
+    def test_misaligned_entries_are_not_combined(self):
+        item, sheet = self.run_route('HND Full-Time', {'ND Course Of Study':'Accountancy\nMarketing\nAccountancy', 'ND Grade':'Lower Credit\nUpper Credit','ND CGPA':'2.70\n3.20'})
+        self.assertEqual(item['status'],'Pending Review')
+        self.assertIn('different numbers of lines',sheet.cell(2,19).comment.text)
+
+    def test_aligned_entries_do_not_borrow_a_grade_from_another_line(self):
+        item, sheet = self.run_route('HND Part-Time', {'ND Course Of Study':'Accountancy\nAccountancy', 'ND Grade':'Upper Credit\nLower Credit', 'ND CGPA':'2.70\n3.20'})
+        self.assertEqual(item['status'],'Not Eligible')
+        self.assertIn('CGPA implies',sheet.cell(2,19).comment.text)
+
+    def test_unrelated_course_is_saved_and_explained(self):
+        item, sheet = self.run_route('HND Full-Time', {'ND Course Of Study':'Marine Navigation'},save=True)
+        self.assertEqual(item['status'],'Not Eligible')
+        self.assertIn('does not match',sheet.cell(2,19).comment.text)
+        self.assertEqual(Verification.objects.count(),1)

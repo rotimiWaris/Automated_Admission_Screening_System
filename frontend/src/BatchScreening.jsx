@@ -29,7 +29,7 @@ export default function BatchScreening({pages, rules, user, onReview, automatic 
     inFlight.current = true;
     setBusy(true); setError(''); setBatch(null);
     try {
-      const course_rules = Object.fromEntries(courses.map(course => {
+      const course_rules = admissionType !== 'ND Full-Time' ? {} : Object.fromEntries(courses.map(course => {
         const rule = rules.find(rule => String(rule.id) === mapping[course]);
         return [course, rule ? {id: rule.id, revision: rule.revision} : null];
       }));
@@ -49,9 +49,9 @@ export default function BatchScreening({pages, rules, user, onReview, automatic 
   if (!drafts.length) return null;
   return <section className="batch-section" aria-label="Batch screening">
     <div className="section-title"><div><div className="eyebrow">DOCUMENT RESULTS</div><h3>Screen every extracted student</h3><p>{drafts.length} students across {pages.length} processed page(s). Results use the configured admission rules.</p></div></div>
-    <details open={courses.some(course => !mapping[course])}><summary>Programme matching</summary><p>Programme names and recognised naming variants are matched automatically. For other names, choose the rules once per course; no result retyping is needed.</p>
+    {admissionType === 'ND Full-Time' && <details open={courses.some(course => !mapping[course])}><summary>Programme matching</summary><p>Programme names and recognised naming variants are matched automatically. For other names, choose the rules once per course; no result retyping is needed.</p>
       <div className="course-mappings">{courses.map(course => <label className="field" key={course}><span>{course || 'Course not detected'}</span><select disabled={busy} value={mapping[course]} onChange={e => {setMapping({...mapping, [course]: e.target.value}); setBatch(null);}}><option value="">Choose admission rules</option>{rules.map(rule => <option key={rule.id} value={rule.id}>{rule.programme} · {rule.academic_session}</option>)}</select></label>)}</div>
-    </details>
+    </details>}
     <label className="checkbox"><input type="checkbox" disabled={!user || busy} checked={Boolean(user && save)} onChange={e => {setSave(e.target.checked); setBatch(null);}}/>Save evaluated students to my history{!user && ' (sign in to enable)'}</label>
     <button type="button" className="button" disabled={busy || Boolean(batch && save)} onClick={screenBatch}>{busy ? 'Screening students…' : 'Screen all students'}</button>
     {busy && <p role="status">Comparing each student with their programme requirements…</p>}

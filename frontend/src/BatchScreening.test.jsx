@@ -83,3 +83,10 @@ it('paginates large batches and opens the correct draft on page two', async () =
   await user.click(screen.getByRole('button',{name:/Open student for corrections/}));
   expect(onReview).toHaveBeenCalledWith(expect.objectContaining({registration_number:'REG50'}),'complete');
 });
+
+
+it.each(['ND Part-Time', 'HND Full-Time', 'HND Part-Time'])('uses server course matching for %s', async admissionType => {
+  render(<BatchScreening pages={pages} rules={rules} admissionType={admissionType} onReview={vi.fn()}/>);
+  await waitFor(() => expect(api).toHaveBeenCalledWith('screen-batch', expect.objectContaining({body: expect.objectContaining({course_rules: {}, admission_type: admissionType})})));
+  expect(screen.queryByRole('combobox')).not.toBeInTheDocument();
+});

@@ -137,6 +137,17 @@ def workbook_bytes(items, admission_type):
             except ValueError: same=False
             labels=originals if same or not subjects else subjects
             row[jamb]='; '.join(label+(' ['+chr(0x2713)+']' if result.get('status')=='Eligible' and subjects else '') for label in labels)
+        selection = result.get('selected_nd_entry', {})
+        if admission_type.startswith('HND'):
+            for field in ['ND Course Of Study', 'ND Grade', 'ND CGPA']:
+                parts = str(row.get(field, '')).splitlines()
+                position = selection.get('positions', {}).get(field)
+                nonempty = [i for i, part in enumerate(parts) if part.strip()]
+                parts = [strip_assessment_marks(part) for part in parts]
+                if result.get('status') == 'Eligible' and position is not None and position < len(nonempty):
+                    i = nonempty[position]
+                    parts[i] = parts[i].rstrip() + ' [' + chr(0x2713) + ']'
+                row[field] = '\n'.join(parts)
         if 'age' in headers: row['age']=applicant.get('age','')
         remark=key('Remark');original=item.get('original_remark',result.get('original_remark',''))
         row[remark]={'Eligible':'Qualified','Not Eligible':'Unqualified'}.get(result.get('status'),'Pending Review')

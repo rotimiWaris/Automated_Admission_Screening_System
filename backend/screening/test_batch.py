@@ -11,7 +11,7 @@ class BatchTests(TestCase):
         from django.contrib.auth import get_user_model
         self.client.force_login(get_user_model().objects.create_user(username='authenticated-fixture'))
         self.rule = RuleSet.objects.create(programme='Computer Science', academic_session='2026/2027', required_subjects=[{'subject': 'English Language', 'minimum_grade': 'C6'}])
-        self.draft = {'student_name': 'Synthetic Student', 'registration_number': 'TEST-001', 'course': 'Computer Science', 'jamb_score': 240,
+        self.draft = {'dob': '2000-01-01', 'student_name': 'Synthetic Student', 'registration_number': 'TEST-001', 'course': 'Computer Science', 'jamb_score': 240,
                       'confidence': 95, 'review_issues': [], 'sittings': [{'board': 'WAEC', 'exam_type': 'School', 'year': 2025,
                       'subjects': [{'subject': s, 'grade': 'B3'} for s in ['English Language', 'Mathematics', 'Physics', 'Chemistry', 'Biology']]}]}
 

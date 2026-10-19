@@ -60,3 +60,15 @@ def candidate_name_issues(expected, text, label='Olevel result', jamb_name='', s
             else:
                 issues.append(detail+'. Check surname, first name and other names.')
     return issues
+
+
+def screening_key(data, route=None):
+    route = route or data.get('admission_type','ND Full-Time')
+    if route != 'ND Full-Time':
+        source = data.get('source_record', {})
+        form = source.get('Form Number', source.get('Form number',''))
+        key = registration_key(form)
+        if not key: return None
+        from hashlib import sha256
+        return 'FORM:' + sha256((route + ':' + key).encode()).hexdigest()
+    return registration_key(data.get('registration_number',data.get('student',{}).get('registration_number')))

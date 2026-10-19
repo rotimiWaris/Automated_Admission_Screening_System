@@ -2,7 +2,7 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
 from .domain import validate_rules
-from .identities import registration_key
+from .identities import registration_key, screening_key
 
 class RuleSet(models.Model):
     programme = models.CharField(max_length=150)
@@ -41,7 +41,7 @@ class Verification(models.Model):
         constraints = [models.UniqueConstraint(fields=['owner', 'registration_key'], name='unique_owner_student_screening')]
 
     def save(self, *args, **kwargs):
-        self.registration_key = registration_key(self.result.get('student', {}).get('registration_number'))
+        self.registration_key = screening_key(self.result)
         if kwargs.get('update_fields') is not None:
             kwargs['update_fields'] = set(kwargs['update_fields']) | {'registration_key'}
         super().save(*args, **kwargs)
