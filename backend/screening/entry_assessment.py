@@ -7,7 +7,7 @@ from .result_parser import strip_assessment_marks
 FIELDS = ('ND Course Of Study', 'ND Grade', 'ND CGPA', 'ND Institution Name', 'ND Graduation Year')
 
 def lines(value):
-    return [strip_assessment_marks(line).strip() for line in str(value or '').splitlines() if line.strip()] or ['']
+    return [strip_assessment_marks(line).strip() for line in str(value or '').splitlines() ] or ['']
 
 def unresolved(draft, route, detail, failed=False):
     return {'student': {'name': draft['student_name'], 'registration_number': draft['registration_number']},
@@ -21,6 +21,10 @@ def unresolved(draft, route, detail, failed=False):
 def assess_entries(draft, rules, route, confirmed):
     hnd = route.startswith('HND')
     source = draft.get('source_record', {})
+    if hnd:
+        missing = [field for field in ['Form Number', 'Surname', 'First name', 'OLevel Result Sitting 1'] if not str(source.get(field, '')).strip()]
+        if missing:
+            return unresolved(draft, route, 'Missing required HND values: ' + ', '.join(missing) + '.', failed=True)
     values = {field: lines(source.get(field, '')) for field in FIELDS} if hnd else {'Department': lines(draft['course'])}
     count = max(map(len, values.values()))
     if any(len(parts) not in (1, count) for parts in values.values()):
@@ -30,7 +34,10 @@ def assess_entries(draft, rules, route, confirmed):
         selected = {field: parts[index] if len(parts) > 1 else parts[0] for field, parts in values.items()}
         course = selected['ND Course Of Study' if hnd else 'Department']
         rule, match = resolve_programme(course, rules, route)
-        if rule is None:
+        missing = [field for field in FIELDS if not selected.get(field, '').strip()] if hnd else []
+        if missing:
+            result = unresolved(draft, route, f'Entry {index+1}: missing required values: ' + ', '.join(missing) + '.', failed=True)
+        elif rule is None:
             result = unresolved(draft, route, f'Entry {index+1}: course "{course}" ' + ('has ambiguous programme matches.' if match == 'ambiguous' else 'does not match a configured programme.'), failed=bool(course) and match == 'unmatched')
         else:
             candidate = deepcopy(draft)

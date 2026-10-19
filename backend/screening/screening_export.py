@@ -139,13 +139,12 @@ def workbook_bytes(items, admission_type):
             row[jamb]='; '.join(label+(' ['+chr(0x2713)+']' if result.get('status')=='Eligible' and subjects else '') for label in labels)
         selection = result.get('selected_nd_entry', {})
         if admission_type.startswith('HND'):
-            for field in ['ND Course Of Study', 'ND Grade', 'ND CGPA']:
+            for field in ['ND Course Of Study', 'ND Grade', 'ND CGPA', 'ND Graduation Year']:
                 parts = str(row.get(field, '')).splitlines()
                 position = selection.get('positions', {}).get(field)
-                nonempty = [i for i, part in enumerate(parts) if part.strip()]
                 parts = [strip_assessment_marks(part) for part in parts]
-                if result.get('status') == 'Eligible' and position is not None and position < len(nonempty):
-                    i = nonempty[position]
+                if result.get('status') == 'Eligible' and position is not None and position < len(parts):
+                    i = position
                     parts[i] = parts[i].rstrip() + ' [' + chr(0x2713) + ']'
                 row[field] = '\n'.join(parts)
         if 'age' in headers: row['age']=applicant.get('age','')

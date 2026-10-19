@@ -69,7 +69,7 @@ class RouteTests(TestCase):
         self.assertTrue(candidate_name_issues('Test Example','Candidate Name:EXAMPLE TEST STUDENT'))
 
     def test_hnd_grade_boundaries_conflicts_and_missing_values(self):
-        for cgpa,grade,status in [('1.99','Fail','Not Eligible'),('2.00','Pass','Pending Review'),('2.49','Pass','Pending Review'),('2.50','Lower Credit','Eligible'),('2.99','Lower Credit','Eligible'),('3.00','Upper Credit','Eligible'),('3.50','Distinction','Eligible'),('4.00','Distinction','Eligible'),('4.01','Distinction','Pending Review'),('2.50','Upper Credit','Not Eligible'),('','Lower Credit','Pending Review')]:
+        for cgpa,grade,status in [('1.99','Fail','Not Eligible'),('2.00','Pass','Eligible'),('2.49','Pass','Eligible'),('2.50','Lower Credit','Eligible'),('2.99','Lower Credit','Eligible'),('3.00','Upper Credit','Eligible'),('3.50','Distinction','Eligible'),('4.00','Distinction','Eligible'),('4.01','Distinction','Pending Review'),('2.50','Upper Credit','Not Eligible'),('','Lower Credit','Not Eligible')]:
             with self.subTest(cgpa=cgpa,grade=grade):
                 item,sheet=self.run_route('HND Full-Time',{'ND CGPA':cgpa,'ND Grade':grade})
                 self.assertEqual(item['status'],status)
@@ -117,7 +117,7 @@ class RouteTests(TestCase):
         from .table_import import import_students
         for route in ['ND Part-Time','HND Full-Time','HND Part-Time']:
             with self.subTest(route=route):
-                raw=workbook([school('SCHOOLONLY')],[jamb('DIFFERENT')|{'Has 5 Credits?':False}])
+                raw=workbook([school('SCHOOLONLY') | {'ND Graduation Year': '2024'}],[jamb('DIFFERENT')|{'Has 5 Credits?':False}])
                 drafts,_=import_students(raw,'portal.xlsx',route)
                 self.assertEqual(len(drafts),1)
                 self.assertEqual(drafts[0]['registration_number'],'FORMSCHOOLONLY')
@@ -159,7 +159,7 @@ class RouteTests(TestCase):
             item, _ = self.run_route(route, omit=[jamb])
             self.assertEqual(item['status'],'Eligible')
             item, sheet = self.run_route(route, {form: ''})
-            self.assertEqual(item['status'],'Pending Review')
+            self.assertEqual(item['status'],'Not Eligible' if route.startswith('HND') else 'Pending Review')
             self.assertIn('Form number is required',sheet.cell(2,sheet.max_column).comment.text)
 
     def test_misaligned_entries_are_not_combined(self):
@@ -177,3 +177,24 @@ class RouteTests(TestCase):
         self.assertEqual(item['status'],'Not Eligible')
         self.assertIn('does not match',sheet.cell(2,19).comment.text)
         self.assertEqual(Verification.objects.count(),1)
+
+    def test_hnd_missing_required_credentials_fail_even_when_saving(self):
+        for route in ['HND Full-Time', 'HND Part-Time']:
+            for field in ['Form Number','ND Course Of Study','ND Grade','ND CGPA','ND Institution Name','ND Graduation Year','OLevel Result Sitting 1']:
+                with self.subTest(route=route, field=field):
+                    item, sheet = self.run_route(route, {field:''}, save=True)
+                    self.assertEqual(item['status'], 'Not Eligible')
+                    self.assertEqual(sheet.cell(2,19).value, 'Unqualified')
+                    self.assertIn(field,sheet.cell(2,19).comment.text)
+
+    def test_hnd_waiting_period_and_pass_allowance_in_export(self):
+        from unittest.mock import patch
+        from datetime import date
+        with patch('screening.graduation_policy.timezone.localdate', return_value=date(2026,10,19)):
+            for route in ['HND Full-Time','HND Part-Time']:
+                for grade, cgpa, graduation, expected in [('Pass','2.20','2024-12-19','Eligible'),('Pass','2.20','2024-12-20','Pending Review'),('Lower Credit','2.70','2025-12-19','Eligible'),('Lower Credit','2.70','2025-12-20','Pending Review')]:
+                    item, sheet = self.run_route(route, {'ND Grade':grade,'ND CGPA':cgpa,'ND Graduation Year':graduation})
+                    self.assertEqual(item['status'],expected)
+                    text = sheet.cell(2, headers_for(route).index('ND Graduation Year')+1).value
+                    self.assertEqual(chr(0x2713) in text, expected=='Eligible')
+                    if expected=='Pending Review': self.assertIn('More than two months',sheet.cell(2,19).comment.text)

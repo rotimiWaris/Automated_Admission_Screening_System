@@ -115,7 +115,7 @@ def screen_batch(request):
                     result = item['result'] | {origin_key: {'page': item['page'], 'confidence': item['confidence'], 'issues': item['issues'], 'format': item['source_format'], 'rows': item['source_rows']}}
                     key = screening_key(item, admission_type)
                     if not key:
-                        item['status'] = 'Pending Review'
+                        # A missing identifier blocks storage, not the academic decision.
                         item['issues'].append('A valid '+('JAMB registration number' if admission_type=='ND Full-Time' else 'form number')+' is required before saving.')
                         continue
                     saved, created = Verification.objects.get_or_create(owner=request.user, registration_key=key, defaults={'result': result})

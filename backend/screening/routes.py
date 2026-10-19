@@ -53,7 +53,6 @@ def evaluate_route(rule, draft, route, confirmed):
         result['rules']['academic_baseline_admission_type']=rule.admission_type
         result['rules']['admission_type']=route
         result['rules']['minimum_jamb']=None
-        result['warnings'].append('Academic screening uses the configured programme Olevel baseline. UTME score/subjects are excluded for this route.')
     if route.startswith('HND'):
         source=draft.get('source_record',{})
         checks=result['checks']
@@ -64,13 +63,14 @@ def evaluate_route(rule, draft, route, confirmed):
         except (InvalidOperation,ValueError):
             check('ND CGPA','pending','ND CGPA is missing or invalid; enter a value on the 0.00 to 4.00 scale.')
         else:
-            state='failed' if cgpa<2 else 'pending' if cgpa<Decimal('2.50') else 'passed'
-            check('ND CGPA',state,f'CGPA {cgpa}: ' + ('below 2.00 minimum.' if state=='failed' else 'Pass-level application requires consideration.' if state=='pending' else 'meets the 2.50 minimum.'))
+            state='failed' if cgpa<2 else 'passed'
+            check('ND CGPA',state,f'CGPA {cgpa}: ' + ('below 2.00 minimum.' if state=='failed' else 'meets the academic minimum; graduation waiting period assessed separately.'))
+            from .graduation_policy import graduation_check
+            checks.append(graduation_check(source.get('ND Graduation Year', ''), 2 if cgpa < Decimal('2.50') else 1))
             expected='fail' if cgpa<2 else 'pass' if cgpa<Decimal('2.50') else 'lower credit' if cgpa<3 else 'upper credit' if cgpa<Decimal('3.50') else 'distinction'
             grade=' '.join(str(source.get('ND Grade','')).lower().replace('-',' ').split())
             grade={'lc':'lower credit','uc':'upper credit'}.get(grade,grade)
             check('ND grade consistency','passed' if grade==expected else ('pending' if not grade else 'failed'),f'ND grade {grade or "not supplied"}; CGPA implies {expected}.')
-        result['warnings'].append('HND academic screening only: IT/work experience and accreditation are excluded by configuration. Programme is taken from ND Course Of Study.')
         result['status']='Not Eligible' if any(c['label']=='ND grade consistency' and c['status']=='failed' for c in checks) else 'Pending Review' if any(c['status']=='pending' for c in checks) else 'Not Eligible' if any(c['status']=='failed' for c in checks) else 'Eligible'
     from .age_policy import apply_age_policy
     return apply_age_policy(result, draft, admission_type=route)
