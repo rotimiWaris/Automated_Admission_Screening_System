@@ -25,14 +25,18 @@ def admission_headers(values):
 
 def import_students(raw, filename, admission_type='ND Full-Time', smart_processing=False):
     rows = read_table(raw, filename, max_rows=30000, max_uncompressed_bytes=150 * 1024 * 1024, header_detector=admission_headers)
+    if admission_type != 'ND Full-Time':
+        from .routes import import_route
+        # These routes use school records; unrelated JAMB exports are not required.
+        school_rows = [row for row in rows if 'olevelresultsitting1' in {normal(h) for h in row.values}]
+        if not school_rows:
+            raise OCRError('No school result sheet was found for the selected admission type. Include OLevel Result Sitting 1.')
+        return import_route(school_rows, filename, admission_type, smart_processing), school_rows
     from .portal_import import merge_portals
     portal = merge_portals(rows, filename, admission_type, smart_processing)
     if portal is not None:
         return portal
-    if admission_type != 'ND Full-Time':
-        from .routes import import_route
-        return import_route(rows, filename, admission_type, smart_processing), rows
-    if 'formno' in {normal(h) for h in rows[0].values}:
+    if {'formno','formnumber','olevelresultsitting1'} & {normal(h) for h in rows[0].values}:
         from .mapoly_import import import_register
         return import_register(rows, filename, smart_processing=smart_processing), rows
     aliases = {normal(name): name for name in ['student_name', 'registration_number', 'course', 'jamb_score', 'jamb_subjects', 'sitting', 'board', 'exam_type', 'year'] + SUBJECTS}

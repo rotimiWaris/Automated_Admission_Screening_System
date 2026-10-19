@@ -50,7 +50,7 @@ class PortalTests(TestCase):
         return imported,response.json()
 
     def test_join_order_names_status_and_clean_export_all_routes(self):
-        for route in ['ND Full-Time','ND Part-Time','HND Full-Time','HND Part-Time']:
+        for route in ['ND Full-Time']:
             with self.subTest(route=route):
                 raw=workbook([school('A',7),school('B',2)], [jamb('B')|{'Name':'DIFFERENT PERSON','Has 5 Credits?':False},jamb('A')],True)
                 imported,result=self.process(raw,route)

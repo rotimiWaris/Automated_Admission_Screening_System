@@ -111,3 +111,24 @@ class RouteTests(TestCase):
                 note=sheet.cell(2,sheet.max_column).comment.text
                 self.assertIn('minor name typo',note)
                 self.assertIn('Exampel',note)
+
+    def test_other_routes_ignore_jamb_sheet_and_extra_portal_fields(self):
+        from .test_portal_import import workbook, school, jamb
+        from .table_import import import_students
+        for route in ['ND Part-Time','HND Full-Time','HND Part-Time']:
+            with self.subTest(route=route):
+                raw=workbook([school('SCHOOLONLY')],[jamb('DIFFERENT')|{'Has 5 Credits?':False}])
+                drafts,_=import_students(raw,'portal.xlsx',route)
+                self.assertEqual(len(drafts),1)
+                self.assertEqual(drafts[0]['registration_number'],'SCHOOLONLY')
+                self.assertEqual(set(drafts[0]['source_record']),set(headers_for(route)))
+                self.assertNotIn('jamb score',drafts[0]['source_record'])
+                self.assertFalse(any('Has 5 Credits' in issue for issue in drafts[0]['review_issues']))
+                from .routes import evaluate_route
+                rule=RuleSet.objects.get(programme='Accountancy',active=True)
+                result=evaluate_route(rule,drafts[0],route,True)
+                self.assertEqual(result['status'],'Eligible')
+                self.assertFalse(any(c['label']=='JAMB score' for c in result['checks']))
+                if route.startswith('HND'):
+                    self.assertTrue(any(c['label']=='ND CGPA' for c in result['checks']))
+                    self.assertNotIn('Admission age',[c['label'] for c in result['checks']])

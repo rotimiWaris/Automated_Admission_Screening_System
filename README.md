@@ -298,7 +298,7 @@ Smart processing is optional and disabled by default in document imports. It acc
 Authentication is required for all screening, document import/OCR, catalogue, rules and history APIs. Only session initialization and login are public. Sign in with an existing Django account; administrator accounts can be created with `python backend/manage.py createsuperuser`. Rule changes continue to require staff privileges.
 
 
-## Two-sheet portal imports
+## ND Full-Time two-sheet portal imports
 
 Upload one XLSX containing a school sheet (OLevel Result Sitting 1) and a JAMB sheet (Name, UTME Subject, JAMB, registration column). Sheet names/order are irrelevant. REG NO., registration-number variants and Jamb reg identify the join key; punctuation, spacing and case are normalized. Names are never used to find a different registration.
 
@@ -309,3 +309,6 @@ JAMB Name supplies Name on Jamb; school Jamb Score/Jamb Subject supply score/sub
 Up to 10,000 student records can be screened and exported per request. The reader allows up to 30,000 source rows across sheets (including extra JAMB rows), with a 10 MB compressed upload limit and a bounded 150 MB decompressed XLSX limit for admission imports. The reusable reader's default decompression limit remains unchanged. Dashboard results show 50 candidates per page, while the downloaded file contains the full matched batch. Processing and history saving remain synchronous; large workbooks can take longer. Raw text previews show at most 100 spreadsheet rows; all records are processed.
 
 Programme matching ignores qualification/mode labels (ND, HND, Full Time, Part Time), spacing and punctuation. Recognised aliases include engineering technology variants and selected department names; unknown or ambiguous matches still require explicit selection. Imported source labels are preserved in the output.
+
+
+ND Part-Time and HND imports use the school result sheet directly, even if an unrelated JAMB sheet is present. ND Part-Time exports its 15 columns and applies Olevel and ND age checks, without UTME checks. HND Full-Time/Part-Time export their 19 columns and apply Olevel plus ND grade/CGPA checks, without age or UTME checks. Other portal columns are ignored. Missing route-specific required columns still produce an error. School Full Name can be split using the uppercase-surname convention; ambiguous splits require review.

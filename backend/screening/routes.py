@@ -27,6 +27,11 @@ def import_route(rows, filename, route, smart_processing=False):
             target=aliases.get(normal(header),canonical.get(normal(header)))
             if target: values[target]=value
         draft=import_register([TableRow(row.sheet,row.number,values)],filename,require_utme=False,smart_processing=smart_processing)[0]
+        raw = {normal(k):v for k,v in row.values.items()}
+        if raw.get('fullname') and not raw.get('surname') and not raw.get('firstname'):
+            from .portal_import import split_name
+            _, issue = split_name(raw['fullname'])
+            if issue: draft['review_issues'].append(issue)
         draft.update(source_record=source,admission_type=route,applicant={**draft["applicant"],**source},export_headers=headers)
         if route.startswith('HND'):
             draft['applicant']['warnings']=[]
