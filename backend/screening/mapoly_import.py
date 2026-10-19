@@ -12,8 +12,8 @@ def normal(value):
 
 
 def import_register(rows, filename, require_utme=True, smart_processing=False):
-    if len(rows) > 1000:
-        raise OCRError('Import at most 1000 students at a time.')
+    if len(rows) > 10000:
+        raise OCRError('Import at most 10000 students at a time.')
     expected = {normal(h): h for h in HEADERS}
     drafts = []
     for row in rows:
@@ -30,6 +30,8 @@ def import_register(rows, filename, require_utme=True, smart_processing=False):
                  'applicant': applicant_metadata(mapped), 'original_remark': mapped['remark']}
         if not all([name, draft['registration_number'], draft['course']]):
             issues.append('Student name, JAMB registration or programme is missing.')
+        if mapped.get('jamb olevel status','').strip().casefold() in ['false','no','0','not uploaded','pending']:
+            issues.append('JAMB Olevel status requires review: '+mapped['jamb olevel status'])
         if require_utme:
             score = mapped['jamb score'].strip()
             if score.isdigit() and 0 <= int(score) <= 400:

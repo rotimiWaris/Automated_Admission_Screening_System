@@ -11,8 +11,24 @@ def normal(value):
     return re.sub(r'[^a-z0-9]', '', value.lower())
 
 
+def admission_headers(values):
+    """Recognise schemas, not a programme title or the first student row."""
+    keys = {normal(value) for value in values if value}
+    known = {'jambreg','regno','registrationnumber','jambnumber','name','nameonjamb',
+             'fullname','studentname','registrationnumber','surname','firstname','othername',
+             'formno','formnumber','email','phone','dob','dateofbirth','utmesubject','jamb',
+             'jambscore','jambsubject','jambsubjects','jambprogramme','course','programme',
+             'olevelresultsitting1','olevelresultsitting2','sittings','sitting','board',
+             'examtype','year','ndcourseofstudy','ndcgpa','ndgrade','department'}
+    return len(keys & known) >= 3
+
+
 def import_students(raw, filename, admission_type='ND Full-Time', smart_processing=False):
-    rows = read_table(raw, filename, max_rows=2000)
+    rows = read_table(raw, filename, max_rows=30000, max_uncompressed_bytes=150 * 1024 * 1024, header_detector=admission_headers)
+    from .portal_import import merge_portals
+    portal = merge_portals(rows, filename, admission_type, smart_processing)
+    if portal is not None:
+        return portal
     if admission_type != 'ND Full-Time':
         from .routes import import_route
         return import_route(rows, filename, admission_type, smart_processing), rows
@@ -84,8 +100,8 @@ def import_students(raw, filename, admission_type='ND Full-Time', smart_processi
         if not 1 <= len(subjects) <= 9:
             issues.append(f'{source}: enter between 1 and 9 subject grades.')
         draft['sittings'].append({'board': board, 'exam_type': exam_type, 'year': year, 'subjects': subjects})
-    if len(groups) > 1000:
-        raise OCRError('Import at most 1000 students at a time.')
+    if len(groups) > 10000:
+        raise OCRError('Import at most 10000 students at a time.')
     for draft in groups.values():
         draft.pop('_sitting_numbers')
     return list(groups.values()), rows

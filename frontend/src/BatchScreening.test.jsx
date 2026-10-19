@@ -70,3 +70,16 @@ it('shows a fresh outcome and checks for a student already in history', async ()
   expect(screen.getByText('50; minimum 180.')).toBeInTheDocument();
   expect(screen.queryByText('Duplicate')).not.toBeInTheDocument();
 });
+
+it('paginates large batches and opens the correct draft on page two', async () => {
+  const records=Array.from({length:51},(_,i)=>({...draft,student_name:`Student ${i+1}`,registration_number:`REG${i}`}));
+  api.mockResolvedValueOnce({summary:{Eligible:51},results:records.map(item=>({...item,page:1,status:'Eligible',issues:[],result:null}))});
+  const onReview=vi.fn();const user=userEvent.setup();
+  render(<BatchScreening pages={[{page:1,token:'signed',drafts:records}]} rules={rules} onReview={onReview}/>);
+  await screen.findByText('Page 1 of 2');
+  expect(screen.queryByRole('heading',{name:'Student 51'})).not.toBeInTheDocument();
+  await user.click(screen.getByRole('button',{name:'Next results'}));
+  expect(screen.getByRole('heading',{name:'Student 51'})).toBeInTheDocument();
+  await user.click(screen.getByRole('button',{name:/Open student for corrections/}));
+  expect(onReview).toHaveBeenCalledWith(expect.objectContaining({registration_number:'REG50'}),'complete');
+});

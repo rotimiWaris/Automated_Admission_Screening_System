@@ -5,6 +5,7 @@ layouts use labelled-text extraction and return unresolved fields for review.
 """
 import re
 from statistics import median
+from functools import lru_cache
 from .domain import SUBJECTS, GRADES, PENDING_GRADES
 from .jamb_subjects import labelled_subjects
 from .applicant_data import applicant_metadata
@@ -31,7 +32,8 @@ def strip_assessment_marks(text):
     return re.sub(r'\s*\[(?:[?\u2713\u00d7]|[?\u2713\u00d7]\s+[A-F][1-9]\+(?:,\s*[?\u2713\u00d7]\s+[A-F][1-9]\+)*)\]\s*$', '', text)
 
 
-def subject_rows(text):
+@lru_cache(maxsize=1)
+def subject_patterns():
     aliases = {s: [s] for s in SUBJECTS}
     aliases['English Language'] += ['English', 'Use of English']
     aliases['Mathematics'] += ['Maths', 'General Mathematics']
@@ -46,14 +48,18 @@ def subject_rows(text):
     }.items():
         if canonical in aliases:
             aliases[canonical] += variants
+    return {subject: tuple(re.compile(r'^\s*' + re.escape(name) + r'(?:\s*[:|.\-]\s*|\s+)(?:\[([^\[\]]+)\]|(\S+))\s*$', re.I) for name in sorted(names, key=len, reverse=True)) for subject, names in aliases.items()}
+
+
+def subject_rows(text):
     rows, seen = [], set()
     for line in text.splitlines():
         line = strip_assessment_marks(line)
-        for subject, names in aliases.items():
+        for subject, patterns in subject_patterns().items():
             if subject in seen:
                 continue
-            for name in sorted(names, key=len, reverse=True):
-                match = re.search(r'^\s*' + re.escape(name) + r'(?:\s*[:|.\-]\s*|\s+)(?:\[([^\[\]]+)\]|(\S+))\s*$', line, re.I)
+            for pattern in patterns:
+                match = pattern.search(line)
                 if match:
                     token = (match.group(1) or match.group(2)).strip()
                     token = {'AR': 'Awaiting', 'ABS': 'Absent'}.get(token.upper(), token)

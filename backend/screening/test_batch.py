@@ -34,6 +34,7 @@ class BatchTests(TestCase):
     def test_uncertainty_and_missing_course_stay_pending(self):
         self.draft['review_issues'] = ['Uncertain grade']
         self.assertEqual(self.post().json()['results'][0]['status'], 'Pending Review')
+        self.draft['course'] = 'Unknown department'
         result = self.post(course_rules={}).json()['results'][0]
         self.assertEqual(result['status'], 'Pending Review')
         self.assertIsNone(result['result'])

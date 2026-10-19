@@ -64,7 +64,7 @@ class RouteTests(TestCase):
         self.assertEqual(item['status'],'Pending Review')
         self.assertIn('does not match',sheet.cell(2,15).comment.text)
         self.assertIn('Different',sheet.cell(2,15).comment.text)
-        self.assertIsNone(sheet.cell(2,15).value)
+        self.assertEqual(sheet.cell(2,15).value,'Pending Review')
         self.assertEqual(candidate_name_issues('Test Example Student','Candidate Name:EXAMPLE TEST STUDENT'),[])
         self.assertTrue(candidate_name_issues('Test Example','Candidate Name:EXAMPLE TEST STUDENT'))
 

@@ -3,6 +3,7 @@ import csv
 from dataclasses import dataclass
 from io import BytesIO, StringIO
 from itertools import islice
+from typing import Callable
 from zipfile import ZipFile, BadZipFile
 from xml.etree.ElementTree import ParseError
 from openpyxl import load_workbook
@@ -25,21 +26,27 @@ def cell_text(value):
     return str(value).strip()
 
 
-def read_table(raw: bytes, filename: str, max_rows: int = 1000) -> list[TableRow]:
+def read_table(raw: bytes, filename: str, max_rows: int = 1000, max_uncompressed_bytes: int = 30 * 1024 * 1024, header_detector: Callable[[list[str]], bool] | None = None) -> list[TableRow]:
     if not raw or len(raw) > 10 * 1024 * 1024:
         raise OCRError('Table is empty or exceeds 10 MB.')
     rows = []
     def collect(source, sheet):
         headers = None
+        saw_content = False
         for number, cells in enumerate(source, 1):
             if number > max_rows + 20:
                 raise OCRError('Too many worksheet rows, including blank rows.')
             values = [cell_text(value) for value in cells]
             if any(len(value) > 2000 for value in values) or len(values) > 80:
                 raise OCRError('Table exceeds the 80-column or 2,000-character cell limit.')
+            if headers is None and header_detector and number > 20:
+                raise OCRError(f'{sheet}: no recognised column headers in the first 20 rows. Place the column headings near the top of the sheet.')
             if not any(values):
                 continue
+            saw_content = True
             if headers is None:
+                if header_detector and not header_detector(values):
+                    continue
                 while values and not values[-1]:
                     values.pop()
                 if not all(values) or len({v.casefold() for v in values}) != len(values):
@@ -52,6 +59,8 @@ def read_table(raw: bytes, filename: str, max_rows: int = 1000) -> list[TableRow
             rows.append(TableRow(sheet, number, dict(zip(headers, values))))
             if len(rows) > max_rows:
                 raise OCRError(f'Table exceeds the {max_rows}-row limit.')
+        if headers is None and saw_content:
+            raise OCRError(f'{sheet}: no recognised column headers found. Expected a row of column names below any title, not student values.')
     suffix = filename.lower().rsplit('.', 1)[-1]
     if suffix == 'csv':
         try:
@@ -70,7 +79,7 @@ def read_table(raw: bytes, filename: str, max_rows: int = 1000) -> list[TableRow
         try:
             with ZipFile(BytesIO(raw)) as archive:
                 entries = archive.infolist()
-                if len(entries) > 2000 or sum(item.file_size for item in entries) > 30 * 1024 * 1024:
+                if len(entries) > 2000 or sum(item.file_size for item in entries) > max_uncompressed_bytes:
                     raise OCRError('Excel workbook is too large when decompressed.')
                 if any('vbaproject' in item.filename.lower() for item in entries):
                     raise OCRError('Macro-enabled workbooks are not supported. Save as plain XLSX.')

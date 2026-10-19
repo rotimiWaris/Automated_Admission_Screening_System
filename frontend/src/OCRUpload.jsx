@@ -44,7 +44,7 @@ export default function OCRUpload({onApply, disabled = false, rules = [], user =
       } while (nextPage <= lastPage);
       setComplete(true);
       setProgress(`Finished ${pages.length} page(s).`);
-    } catch (e) { setError(`${e.message} Any completed pages remain available below; the whole document has not finished processing.`); }
+    } catch (e) { setError(isTable ? e.message : `${e.message} Any completed pages remain available below; the whole document has not finished processing.`); }
     finally { setBusy(false); }
   }
   const draft = result?.drafts[selected];
@@ -65,7 +65,7 @@ export default function OCRUpload({onApply, disabled = false, rules = [], user =
       <label className="checkbox"><input type="checkbox" checked={automatic} onChange={e => setAutomatic(e.target.checked)}/>Automatically screen students when extraction finishes</label>
     </fieldset></form>
     <p className="muted">PNG, JPG/JPEG, PDF, CSV or Excel (.xlsx) · up to 10 MB and 10 PDF pages · All pages are processed in order, with progress shown below.</p>
-    <p className="muted">Spreadsheets: {admissionType === 'ND Full-Time' ? '21' : admissionType === 'ND Part-Time' ? '15' : '19'} columns, one row per student. Up to 1,000 students. <a href={admissionType === 'ND Full-Time' ? '/templates/mapoly-student-register-sample.xlsx' : admissionType === 'ND Part-Time' ? '/templates/nd-part-time-register.xlsx' : '/templates/hnd-register.xlsx'} download>Download Excel template</a>.</p>
+    <p className="muted">Spreadsheets: {admissionType === 'ND Full-Time' ? '21' : admissionType === 'ND Part-Time' ? '15' : '19'} columns, one row per student. Up to 10,000 students. Upload a merged register or an XLSX with school and JAMB portal sheets; matching uses JAMB registration numbers. <a href={admissionType === 'ND Full-Time' ? '/templates/mapoly-student-register-sample.xlsx' : admissionType === 'ND Part-Time' ? '/templates/nd-part-time-register.xlsx' : '/templates/hnd-register.xlsx'} download>Download Excel template</a>.</p>
     {admissionType !== 'ND Full-Time' && <p className="note">Use the spreadsheet layout for this route. Screening uses the programme O?level baseline without UTME checks. HND also checks ND grade/CGPA; IT and accreditation are excluded. Correct entries in the workbook and re-import.</p>}
     {!availableRules.length && <p className="note">No admission rules are configured for {admissionType}. You can extract records, but screening remains pending until rules are added for this admission type.</p>}
     {progress && <div className="extraction-progress" role="status">{busy && <span className="working-dot"/>}{progress}</div>}
@@ -73,7 +73,7 @@ export default function OCRUpload({onApply, disabled = false, rules = [], user =
     {notice && <div className="success" role="status">{notice}</div>}
     {complete && result?.drafts.length > 0 && <BatchScreening key={runId} pages={result.pages} rules={availableRules} admissionType={admissionType} user={user} onReview={onApply} automatic={automatic}/> }
     {result && <div className="ocr-review">
-      <div>{previewPage.table ? <><h3>Spreadsheet preview</h3><p>Showing the first {previewPage.table.rows.length} of {previewPage.table.count} rows.</p><div className="table-preview" tabIndex="0" role="region" aria-label="Imported spreadsheet"><table><thead><tr>{previewPage.table.headers.map(header => <th key={header}>{header}</th>)}</tr></thead><tbody>{previewPage.table.rows.map((row, index) => <tr key={index}>{row.map((value, cell) => <td key={cell}>{value}</td>)}</tr>)}</tbody></table></div></> : <><a href={previewPage.preview} target="_blank" rel="noreferrer" aria-label="Open document preview"><img className="ocr-preview" src={previewPage.preview} alt={`Uploaded document, page ${previewPage.page} of ${result.page_count}`}/></a><p className="muted">Page {previewPage.page} of {result.page_count}</p></>}</div>
+      <div>{previewPage.table ? <><h3>Spreadsheet preview</h3>{previewPage.merge_report && <div className="note"><strong>Portal merge: {previewPage.merge_report.matched} matched candidates</strong><p>{previewPage.merge_report.school_rows} school rows; {previewPage.merge_report.jamb_rows} JAMB rows. {previewPage.merge_report.excluded_school_rows.length} school rows excluded; {previewPage.merge_report.unused_jamb_rows} JAMB rows unused. School order and serial numbers are preserved.</p><details><summary>Excluded school rows</summary>{previewPage.merge_report.excluded_school_rows.map((row,i)=><p key={i}>S/N {row.serial || row.sheet_row}: {row.registration_number || 'No registration'}: {row.reason}</p>)}</details></div>}<p>Showing the first {previewPage.table.rows.length} of {previewPage.table.count} rows.</p><div className="table-preview" tabIndex="0" role="region" aria-label="Imported spreadsheet"><table><thead><tr>{previewPage.table.headers.map(header => <th key={header}>{header}</th>)}</tr></thead><tbody>{previewPage.table.rows.map((row, index) => <tr key={index}>{row.map((value, cell) => <td key={cell}>{value}</td>)}</tr>)}</tbody></table></div></> : <><a href={previewPage.preview} target="_blank" rel="noreferrer" aria-label="Open document preview"><img className="ocr-preview" src={previewPage.preview} alt={`Uploaded document, page ${previewPage.page} of ${result.page_count}`}/></a><p className="muted">Page {previewPage.page} of {result.page_count}</p></>}</div>
       <div>
         <h3>Review the extraction</h3>{previewPage.table ? <p className="note">Values imported directly from the spreadsheet.</p> : <p className="confidence-score">Recognition score: {draft?.confidence ?? previewPage.confidence ?? 0} / 100 <small>Not a probability of correctness</small></p>}
         {result.warnings.map((warning, i) => <p className="note" key={i}>{warning}</p>)}
@@ -85,7 +85,7 @@ export default function OCRUpload({onApply, disabled = false, rules = [], user =
           <label className="checkbox"><input type="checkbox" checked={replace} onChange={e => setReplace(e.target.checked)}/>Replace the corresponding current form entries with this draft. I will review and correct them before screening.</label>
           <button type="button" className="button secondary" disabled={!replace || !canApply || busy || disabled} onClick={() => {onApply(draft, mode); setNotice('Draft loaded below. Choose the programme, correct any missing fields, and confirm the results before screening.'); setReplace(false);}}>Load draft for review ↓</button>
         </> : <p>No student draft could be separated reliably. You can still use the extracted text below for manual entry.</p>}
-        <details className="ocr-raw"><summary>Show extracted text</summary><textarea aria-label="Extracted document text" readOnly value={result.text}/></details>
+        <details className="ocr-raw"><summary>Show extracted text / first 100 spreadsheet rows</summary><textarea aria-label="Extracted document text" readOnly value={result.text}/></details>
       </div>
     </div>}
   </section>;

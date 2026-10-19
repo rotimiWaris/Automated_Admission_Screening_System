@@ -56,13 +56,12 @@ class RegisterTests(TestCase):
         report = load_workbook(BytesIO(base64.b64decode(response.json()['excel']['base64'])))
         self.assertEqual(report.active.max_row, 1001)
         self.assertEqual(report.active.max_column, 21)
-        self.drafts.append(self.drafts[0])
+        from .mapoly_import import import_register
+        from result_ocr.tables import TableRow
+        self.drafts = [self.drafts[0]] * 10001
         self.assertEqual(self.post_batch().status_code, 400)
-        sheet.append([source[h] for h in HEADERS])
-        raw = BytesIO()
-        workbook.save(raw)
-        with self.assertRaisesMessage(OCRError, 'at most 1000 students'):
-            import_students(raw.getvalue(), 'too-many.xlsx')
+        with self.assertRaisesMessage(OCRError, 'at most 10000 students'):
+            import_register([TableRow('School',2,source)] * 10001, 'too-many.xlsx')
 
     @classmethod
     def setUpTestData(cls):
@@ -85,7 +84,7 @@ class RegisterTests(TestCase):
         response = self.post_batch()
         self.assertEqual(response.status_code, 200, response.content[:500])
         data = response.json()
-        self.assertEqual([r['status'] for r in data['results']], ['Eligible', 'Not Eligible', 'Eligible', 'Eligible', 'Not Eligible', 'Eligible', 'Eligible', 'Eligible', 'Eligible', 'Not Eligible', 'Pending Review', 'Eligible'])
+        self.assertEqual([r['status'] for r in data['results']], ['Eligible', 'Not Eligible', 'Eligible', 'Eligible', 'Not Eligible', 'Pending Review', 'Eligible', 'Eligible', 'Eligible', 'Not Eligible', 'Pending Review', 'Eligible'])
         self.assertEqual(Verification.objects.count(), 12)
         first = data['results'][0]['result']
         self.assertIsInstance(first['applicant']['age'], int)
@@ -105,7 +104,7 @@ class RegisterTests(TestCase):
         self.assertIn('English Language [✓]', rows[1][13])
         self.assertIn('[✓]', rows[9][16])
         self.assertIn('[✓]', rows[9][17])
-        self.assertIsNone(rows[11][20])
+        self.assertEqual(rows[11][20], 'Pending Review')
         self.assertIn('English Language: C6 [✓]', rows[1][16])
         self.assertIn('English Language: F9', rows[5][16])
         self.assertNotIn('[', rows[5][16])

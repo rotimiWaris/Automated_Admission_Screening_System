@@ -139,16 +139,18 @@ def workbook_bytes(items, admission_type):
             row[jamb]='; '.join(label+(' ['+chr(0x2713)+']' if result.get('status')=='Eligible' and subjects else '') for label in labels)
         if 'age' in headers: row['age']=applicant.get('age','')
         remark=key('Remark');original=item.get('original_remark',result.get('original_remark',''))
-        row[remark]={'Eligible':'Qualified','Not Eligible':'Unqualified'}.get(result.get('status'),'')
+        row[remark]={'Eligible':'Qualified','Not Eligible':'Unqualified'}.get(result.get('status'),'Pending Review')
         sheet.append([row.get(h,'') for h in headers])
         details=['Decision: '+result.get('remark','Pending Review')]
         reasons=[c['label']+': '+c['detail'] for c in result.get('checks',[]) if c['status']!='passed']
         reasons+=item.get('issues',[])
         details+=list(dict.fromkeys(reasons))
-        if not row[remark]:details.append('Review required before a final remark can be assigned.')
+        if row[remark]=='Pending Review':details.append('Review required before a final remark can be assigned.')
         details+=[w for w in dict.fromkeys(result.get('warnings',[])+applicant.get('warnings',[])) if w not in reasons]
         if str(original).strip().casefold() not in ['', 'none', 'n/a', '-']:
-            details+=['Previous remark: '+str(original),remark_comparison(original,result.get('status'))['detail']]
+            details.append('Previous remark: '+str(original))
+            comparison = remark_comparison(original,result.get('status'))['detail']
+            if comparison: details.append(comparison)
         details.append(admission_type)
         sheet.cell(sheet.max_row,headers.index(remark)+1).comment=sized_comment(details)
     sheet.freeze_panes='A2';sheet.auto_filter.ref=sheet.dimensions

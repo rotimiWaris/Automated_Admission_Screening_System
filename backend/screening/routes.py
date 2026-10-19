@@ -31,7 +31,7 @@ def import_route(rows, filename, route, smart_processing=False):
         if route.startswith('HND'):
             draft['applicant']['warnings']=[]
         drafts.append(draft)
-    if len(drafts)>1000: raise OCRError('Import at most 1000 students at a time.')
+    if len(drafts)>10000: raise OCRError('Import at most 10000 students at a time.')
     return drafts
 
 

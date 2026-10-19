@@ -77,14 +77,15 @@ def ocr(request):
                 raise OCRError('A spreadsheet is imported in one request. Select page 1.')
             raw = upload.read(10 * 1024 * 1024 + 1)
             drafts, rows = import_students(raw, upload.name, admission_type, smart_processing)
+            merge_report = drafts[0].get('merge_report') if drafts else None
             text = StringIO()
             writer = csv.writer(text)
             headers = list(dict.fromkeys(key for row in rows for key in row.values))
             writer.writerow(['Sheet', 'Row', *headers])
-            for row in rows:
+            for row in rows[:100]:
                 writer.writerow([row.sheet, row.number, *[row.values.get(key, '') for key in headers]])
             token = signing.dumps({'document': sha256(raw).hexdigest(), 'page': 1, 'drafts': drafts, 'admission_type': admission_type}, salt='ocr-batch', compress=True)
-            return JsonResponse({'page': 1, 'page_count': 1, 'token': token, 'confidence': None, 'source_format': upload.name.rsplit('.', 1)[-1].lower(),
+            return JsonResponse({'page': 1, 'page_count': 1, 'token': token, 'confidence': None, 'merge_report': merge_report, 'source_format': upload.name.rsplit('.', 1)[-1].lower(),
                                  'text': text.getvalue(), 'drafts': drafts, 'warnings': ['Imported directly from cells; OCR was not used. Invalid or missing values need review.'],
                                  'low_confidence_words': [], 'preview': None, 'table': {'headers': headers, 'rows': [[row.values.get(key, '') for key in headers] for row in rows[:20]], 'count': len(rows)}})
         except OCRError as exc:

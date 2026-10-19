@@ -44,8 +44,8 @@ def screen_batch(request):
         if page.get('admission_type', 'ND Full-Time') != admission_type:
             raise ValueError('Admission type changed. Import the document again for this admission type.')
         records.extend((page['page'], draft) for draft in page['drafts'])
-    if not 1 <= len(records) <= 1000:
-        raise ValueError('Extract between 1 and 1000 students per batch.')
+    if not 1 <= len(records) <= 10000:
+        raise ValueError('Extract between 1 and 10000 students per batch.')
     registrations = Counter(registration_key(draft['registration_number']) for _, draft in records)
     existing = dict(Verification.objects.filter(owner=request.user, registration_key__in=[key for key in registrations if key]).values_list('registration_key', 'id')) if request.user.is_authenticated else {}
     rules = {r.id: r for r in RuleSet.objects.filter(active=True, admission_type__in=[admission_type, 'All Admission Type', 'ND Full-Time'])}
@@ -58,6 +58,14 @@ def screen_batch(request):
             if admission_type != 'ND Full-Time' and draft.get('admission_type') != admission_type:
                 issues.append('Import the register using the selected admission type before screening.')
             mapping = mappings.get(draft['course'])
+            if mapping is None:
+                from .programmes import programme_key
+                matches = [r for r in rules.values() if programme_key(r.programme) == programme_key(draft['course'])]
+                specific = [r for r in matches if r.admission_type == admission_type]
+                matches = specific or matches
+                if len(matches) == 1:
+                    mapping = {'id': matches[0].id, 'revision': matches[0].revision}
+
             rule = rules.get(mapping.get('id')) if isinstance(mapping, dict) and type(mapping.get('id')) is int else None
             if admission_type != 'ND Full-Time' and draft.get('admission_type') != admission_type:
                 rule = None

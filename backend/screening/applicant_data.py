@@ -58,6 +58,6 @@ def remark_comparison(original, status):
     if not text:
         return {'mark': '', 'detail': 'No previous remark'}
     if expected is None or status not in ['Eligible', 'Not Eligible']:
-        return {'mark': '?', 'detail': 'Needs review; no verified comparison'}
+        return {'mark': '?', 'detail': ''}
     agrees = expected == (status == 'Eligible')
     return {'mark': '✓' if agrees else '×', 'detail': 'Previous remark agrees' if agrees else 'Previous remark disagrees'}

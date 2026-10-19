@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { api } from './api';
+import {programmeKey} from './programmes';
 import OCRUpload from './OCRUpload';
 import History from './History';
 import CriteriaDetails, { CriteriaEditor } from './CriteriaDetails';
@@ -137,7 +138,7 @@ function Screening({rules, catalogue, user, refreshRules}) {
         setDob(draft.applicant?.dob || draft.dob || ''); setName(draft.student_name || ''); setRegistration(draft.registration_number || '');
         // A course printed on a document is not necessarily an approved rule set.
         // Require explicit programme selection instead of a fuzzy automatic match.
-        const match = rules.filter(r => r.programme.trim().toLowerCase() === draft.course.trim().toLowerCase());
+        const match = rules.filter(r => programmeKey(r.programme) === programmeKey(draft.course));
         setRuleId(match.length === 1 ? String(match[0].id) : '');
       }
       if (mode !== 'olevel') { setScore(draft.jamb_score === null ? '' : String(draft.jamb_score)); setJambSubjects(Array.from({length: 4}, (_, i) => draft.jamb_subjects?.[i] || '')); }
